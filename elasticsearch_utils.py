@@ -19,8 +19,18 @@ def listar_indices(client):
 
 def buscar_mapping(client, indice):
     """Retorna o mapping do índice informado."""
-    pass
+    return client.indices.get_mapping(index=indice)[indice]["mappings"]
 
-def buscar_amostras(client, indice, n=3):
-    """Retorna n amostras de documentos do índice."""
-    pass 
+def buscar_amostras(client, indice, n=5):
+    """Retorna n amostras aleatórias de documentos do índice."""
+    query = {
+        "size": n,
+        "query": {
+            "function_score": {
+                "query": {"match_all": {}},
+                "random_score": {}
+            }
+        }
+    }
+    res = client.search(index=indice, body=query)
+    return [hit["_source"] for hit in res["hits"]["hits"]] 
