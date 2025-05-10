@@ -14,7 +14,8 @@ def conectar_elasticsearch(host, api_key):
 
 def listar_indices(client):
     """Retorna a lista de índices disponíveis."""
-    pass
+    indices_info = client.cat.indices(format="json")
+    return [idx["index"] for idx in indices_info]
 
 def buscar_mapping(client, indice):
     """Retorna o mapping do índice informado."""

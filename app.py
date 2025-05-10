@@ -1,5 +1,5 @@
 import streamlit as st
-from elasticsearch_utils import conectar_elasticsearch
+from elasticsearch_utils import conectar_elasticsearch, listar_indices
 
 st.set_page_config(page_title="AgnostiChat", layout="wide")
 
@@ -16,7 +16,6 @@ llm_provider = st.sidebar.selectbox("Provider LLM", ["openai", "ollama"], index=
 if st.sidebar.button("Testar Conexão Elasticsearch"):
     try:
         client = conectar_elasticsearch(host, api_key)
-        # Testa conexão listando índices
         indices = client.cat.indices()
         st.session_state["es_host"] = host
         st.session_state["es_api_key"] = api_key
@@ -29,7 +28,19 @@ if st.sidebar.button("Testar Conexão Elasticsearch"):
         st.error(f"Erro ao conectar no Elasticsearch: {e}")
 
 # ====== Seleção de Índice ======
-# Dropdown para seleção de índice
+if st.session_state.get("es_client"):
+    try:
+        indices = listar_indices(st.session_state["es_client"])
+        if indices:
+            indice_selecionado = st.selectbox("Selecione um índice para consultar:", indices, key="indice_select")
+            st.session_state["indice_selecionado"] = indice_selecionado
+            st.info(f"Índice selecionado: {indice_selecionado}")
+        else:
+            st.warning("Nenhum índice encontrado no Elasticsearch.")
+    except Exception as e:
+        st.error(f"Erro ao listar índices: {e}")
+else:
+    st.info("Conecte-se ao Elasticsearch para listar os índices.")
 
 # ====== Chat ======
 # Campo para pergunta e exibição do contexto
