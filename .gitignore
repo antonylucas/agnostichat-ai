@@ -1,3 +1,4 @@
 /duckchat/
 __pycache__/
 .env
+.venv/
