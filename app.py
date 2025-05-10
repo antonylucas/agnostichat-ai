@@ -31,6 +31,24 @@ st.markdown(
     .stSidebar {
         background-color: #f2f4f8 !important;
     }
+    .stTextInput > div > div > input, .stTextInput input {
+        padding: 0.5em 1em;
+        border-radius: 8px;
+        border: 1.5px solid #eee;
+        font-size: 1em;
+        box-sizing: border-box;
+    }
+    .stSelectbox > div > div {
+        border-radius: 8px !important;
+        border: 1.5px solid #eee !important;
+        font-size: 1em !important;
+        padding: 0.5em 1em !important;
+        box-sizing: border-box;
+    }
+    .stSelectbox label, .stTextInput label {
+        font-weight: 500;
+        margin-bottom: 0.2em;
+    }
     .stChatMessage {
         border-radius: 10px;
         padding: 0.5em 1em;
