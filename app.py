@@ -5,6 +5,7 @@ from llm_utils import conectar_llm, enviar_prompt_pergunta
 import json
 from dotenv import load_dotenv
 import os
+import re
 
 def salvar_configuracoes_env(host, api_key, llm_api_key, llm_provider):
     """Salva as configurações no arquivo .env"""
@@ -20,6 +21,13 @@ LLM_PROVIDER={llm_provider}
     except Exception as e:
         st.error(f"Erro ao salvar configurações: {e}")
         return False
+
+def extrair_json(texto):
+    match = re.search(r"```json\s*([\s\S]+?)\s*```", texto)
+    if match:
+        return match.group(1)
+    # Se não encontrar, tenta remover blocos de código simples
+    return texto.strip('` \n')
 
 load_dotenv()
 
@@ -61,7 +69,7 @@ st.markdown(
         border-radius: 8px !important;
         border: 1.5px solid #eee !important;
         font-size: 1em !important;
-        padding: 0.5em 1em !important;
+        /* padding: 0.5em 1em !important; */
         box-sizing: border-box;
     }
     .stSelectbox label, .stTextInput label {
@@ -102,10 +110,12 @@ with st.sidebar.container():
 
 st.sidebar.header("🤖 Conexão LLM")
 with st.sidebar.container():
+    llm_provider_default = st.session_state.get("llm_provider", os.getenv("LLM_PROVIDER", "openai"))
     llm_provider = st.selectbox(
         "Provider LLM",
         ["openai", "ollama"],
-        index=0 if st.session_state.get("llm_provider", os.getenv("LLM_PROVIDER", "openai")) != "ollama" else 1
+        index=0 if llm_provider_default != "ollama" else 1,
+        key="llm_provider"
     )
     llm_api_key = st.text_input(
         "API Key do LLM (OpenAI/Ollama)",
@@ -125,7 +135,6 @@ if st.sidebar.button("Testar Conexão Elasticsearch"):
         st.session_state["es_host"] = host
         st.session_state["es_api_key"] = api_key
         st.session_state["llm_api_key"] = llm_api_key
-        st.session_state["llm_provider"] = llm_provider
         st.session_state["es_client"] = client
         st.success("Conexão com Elasticsearch bem-sucedida! {0} índices encontrados.".format(len(indices.splitlines())))
     except Exception as e:
@@ -217,22 +226,33 @@ if st.session_state.get("mapping") and st.session_state.get("amostras"):
                 try:
                     llm_client = conectar_llm(st.session_state["llm_api_key"], st.session_state["llm_provider"])
                     query_dsl = enviar_prompt_pergunta(llm_client, prompt, pergunta)
-                    st.code(query_dsl, language="json")
+                    # Garante que query_dsl é uma string
+                    if hasattr(query_dsl, "content"):
+                        query_dsl_str = query_dsl.content
+                    else:
+                        query_dsl_str = str(query_dsl)
+                    st.code(query_dsl_str, language="json")
                     st.session_state["chat_history"].append({
                         "role": "assistant",
                         "content": "Query DSL sugerida:",
-                        "query_dsl": query_dsl
+                        "query_dsl": query_dsl_str
                     })
                     with st.spinner("Executando query no Elasticsearch..."):
+                        query_dsl_json = extrair_json(query_dsl_str)
                         res = st.session_state["es_client"].search(
                             index=st.session_state["indice_selecionado"],
-                            body=json.loads(query_dsl)
+                            body=json.loads(query_dsl_json)
                         )
-                        st.json(res["hits"]["hits"])
+                        # Exibe agregações se existirem, senão exibe hits
+                        if "aggregations" in res:
+                            st.subheader("Resultado da agregação")
+                            st.json(res["aggregations"])
+                        else:
+                            st.json(res["hits"]["hits"])
                         st.session_state["chat_history"].append({
                             "role": "assistant",
                             "content": "Resultados da consulta:",
-                            "result": res["hits"]["hits"]
+                            "result": res.get("aggregations", res["hits"]["hits"])
                         })
                 except Exception as e:
                     st.error(f"Erro no processamento: {e}")
