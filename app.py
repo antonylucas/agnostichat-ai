@@ -6,6 +6,21 @@ import json
 from dotenv import load_dotenv
 import os
 
+def salvar_configuracoes_env(host, api_key, llm_api_key, llm_provider):
+    """Salva as configurações no arquivo .env"""
+    env_content = f"""ES_HOST={host}
+ES_API_KEY={api_key}
+LLM_API_KEY={llm_api_key}
+LLM_PROVIDER={llm_provider}
+"""
+    try:
+        with open('.env', 'w') as f:
+            f.write(env_content)
+        return True
+    except Exception as e:
+        st.error(f"Erro ao salvar configurações: {e}")
+        return False
+
 load_dotenv()
 
 # ====== Custom CSS para identidade visual ======
@@ -102,6 +117,11 @@ if st.sidebar.button("Testar Conexão Elasticsearch"):
     try:
         client = conectar_elasticsearch(host, api_key)
         indices = client.cat.indices()
+        
+        # Salva as configurações no .env
+        if salvar_configuracoes_env(host, api_key, llm_api_key, llm_provider):
+            st.success("Configurações salvas com sucesso!")
+        
         st.session_state["es_host"] = host
         st.session_state["es_api_key"] = api_key
         st.session_state["llm_api_key"] = llm_api_key
