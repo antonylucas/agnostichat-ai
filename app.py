@@ -16,6 +16,10 @@ st.markdown(
         color: white;
         border-radius: 8px;
         font-weight: bold;
+        transition: background 0.2s;
+    }
+    .stButton>button:hover {
+        background-color: #b8001a;
     }
     .st-bb {
         background-color: #fff;
@@ -23,6 +27,9 @@ st.markdown(
         padding: 1em;
         margin-bottom: 1em;
         box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .stSidebar {
+        background-color: #f2f4f8 !important;
     }
     .stChatMessage {
         border-radius: 10px;
@@ -40,7 +47,7 @@ st.markdown(
 )
 
 # ====== Sidebar com logo e inputs ======
-st.sidebar.image("assets/logo_agnostic.png", use_column_width=True)
+st.sidebar.image("assets/logo_agnostic.png", use_container_width=True)
 st.sidebar.markdown("<h2 style='color:#E60023; margin-bottom:0;'>AgnostiChat</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("<small>powered by AgnosticData</small>", unsafe_allow_html=True)
 
@@ -51,8 +58,8 @@ with st.sidebar.container():
 
 st.sidebar.header("🤖 Conexão LLM")
 with st.sidebar.container():
-    llm_api_key = st.text_input("API Key do LLM (OpenAI/Ollama)", type="password", value=st.session_state.get("llm_api_key", ""))
     llm_provider = st.selectbox("Provider LLM", ["openai", "ollama"], index=0 if st.session_state.get("llm_provider") != "ollama" else 1)
+    llm_api_key = st.text_input("API Key do LLM (OpenAI/Ollama)", type="password", value=st.session_state.get("llm_api_key", ""))
 
 if st.sidebar.button("Testar Conexão Elasticsearch"):
     try:
@@ -71,11 +78,11 @@ if st.sidebar.button("Testar Conexão Elasticsearch"):
 # ====== Título principal ======
 st.markdown("""
 <div style='display:flex; align-items:center; gap:1em;'>
-  <img src='assets/logo_agnostic.png' width='60' style='margin-bottom:0;'>
-  <h1 style='color:#E60023; margin-bottom:0;'>AgnostiChat</h1>
 </div>
-<small>Interface conversacional para Elasticsearch com LLM</small>
 """, unsafe_allow_html=True)
+st.image("assets/logo_agnostic.png", width=60)
+st.markdown("<h1 style='color:#E60023; margin-bottom:0; font-size:2.5em;'>AgnostiChat</h1>", unsafe_allow_html=True)
+st.markdown("<small>Interface conversacional para Elasticsearch com LLM</small>", unsafe_allow_html=True)
 
 # ====== Seleção de Índice ======
 if st.session_state.get("es_client"):
