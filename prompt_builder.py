@@ -22,5 +22,23 @@ def montar_prompt(nome_indice, mapping, tipos_dados, campos, amostras, pergunta)
     describe = describe_mapping(mapping)
     amostras_str = "\n".join([json.dumps(a, ensure_ascii=False, indent=2) for a in amostras])
     prompt = f"""
-Você é um assistente que gera queries DSL do Elasticsearch.\nUse apenas a estrutura do índice abaixo para responder à pergunta do usuário.\nInclua apenas a query DSL no seu output, sem explicações.\n\nNome do índice: {nome_indice}\n\nEstrutura do índice (mapping):\n{describe}\n\nExemplos de documentos:\n{amostras_str}\n\nPergunta do usuário:\n{pergunta}\n"""
+Você é um assistente especializado em gerar queries DSL do Elasticsearch.
+Utilize apenas as informações abaixo para responder à pergunta do usuário.
+
+Nome do índice: {nome_indice}
+
+Estrutura do índice (mapping):
+{describe}
+
+Exemplos de documentos:
+{amostras_str}
+
+Pergunta do usuário:
+{pergunta}
+
+IMPORTANTE:
+- Retorne apenas a query DSL do Elasticsearch, sem explicações ou comentários.
+- A query deve estar entre blocos de código ```json.
+- Não inclua nenhum texto extra além da query.
+"""
     return prompt 
