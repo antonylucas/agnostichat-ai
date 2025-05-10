@@ -59,12 +59,6 @@ LLM_PROVIDER=openai
 - langchain-openai
 - langchain-community
 
-## Contribuição
-Pull requests são bem-vindos! Siga o padrão de branches e mantenha o código organizado.
-
-## Licença
-MIT
-
 ## Estrutura Inicial
 - `app.py`: Aplicação principal
 - `elasticsearch_utils.py`: Funções para interagir com o Elasticsearch
