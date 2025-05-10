@@ -2,9 +2,15 @@
 Utilitários para interação com o Elasticsearch
 """
 
+from elasticsearch import Elasticsearch
+
 def conectar_elasticsearch(host, api_key):
     """Conecta ao Elasticsearch e retorna o client."""
-    pass
+    client = Elasticsearch(hosts=[host], api_key=api_key, verify_certs=False)
+    # Testa conexão
+    if not client.ping():
+        raise Exception("Não foi possível conectar ao Elasticsearch.")
+    return client
 
 def listar_indices(client):
     """Retorna a lista de índices disponíveis."""
