@@ -3,6 +3,10 @@ from elasticsearch_utils import conectar_elasticsearch, listar_indices, buscar_m
 from prompt_builder import montar_prompt
 from llm_utils import conectar_llm, enviar_prompt_pergunta
 import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # ====== Custom CSS para identidade visual ======
 st.markdown(
@@ -71,13 +75,28 @@ st.sidebar.markdown("<small>powered by AgnosticData</small>", unsafe_allow_html=
 
 st.sidebar.header("🔗 Conexão Elasticsearch")
 with st.sidebar.container():
-    host = st.text_input("Host do Elasticsearch", value=st.session_state.get("es_host", ""))
-    api_key = st.text_input("API Key do Elasticsearch", type="password", value=st.session_state.get("es_api_key", ""))
+    host = st.text_input(
+        "Host do Elasticsearch",
+        value=st.session_state.get("es_host", os.getenv("ES_HOST", ""))
+    )
+    api_key = st.text_input(
+        "API Key do Elasticsearch",
+        type="password",
+        value=st.session_state.get("es_api_key", os.getenv("ES_API_KEY", ""))
+    )
 
 st.sidebar.header("🤖 Conexão LLM")
 with st.sidebar.container():
-    llm_provider = st.selectbox("Provider LLM", ["openai", "ollama"], index=0 if st.session_state.get("llm_provider") != "ollama" else 1)
-    llm_api_key = st.text_input("API Key do LLM (OpenAI/Ollama)", type="password", value=st.session_state.get("llm_api_key", ""))
+    llm_provider = st.selectbox(
+        "Provider LLM",
+        ["openai", "ollama"],
+        index=0 if st.session_state.get("llm_provider", os.getenv("LLM_PROVIDER", "openai")) != "ollama" else 1
+    )
+    llm_api_key = st.text_input(
+        "API Key do LLM (OpenAI/Ollama)",
+        type="password",
+        value=st.session_state.get("llm_api_key", os.getenv("LLM_API_KEY", ""))
+    )
 
 if st.sidebar.button("Testar Conexão Elasticsearch"):
     try:

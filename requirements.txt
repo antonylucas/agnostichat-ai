@@ -1,3 +1,4 @@
 streamlit
 elasticsearch
-requests 
+requests
+python-dotenv 
