@@ -35,103 +35,155 @@ load_dotenv()
 st.markdown(
     """
     <style>
-    .main {
-        background-color: #f7f7f7;
+    html, body, .main {
+        background-color: #f5f6fa !important;
+        font-family: 'Inter', 'Roboto', 'Segoe UI', Arial, sans-serif;
+    }
+    .stSidebar {
+        background: #f2f4f8 !important;
+        padding-top: 2em !important;
+    }
+    .sidebar-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        padding: 1em 1em 0.8em 1em;
+        margin-bottom: 1em;
+    }
+    .sidebar-card h3 {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 0.7em;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
     }
     .stButton>button {
-        background-color: #E60023;
-        color: white;
-        border-radius: 8px;
-        font-weight: bold;
+        background: linear-gradient(90deg, #E60023 60%, #ff4b2b 100%);
+        color: #fff;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1.1em;
+        box-shadow: 0 2px 8px rgba(230,0,35,0.08);
+        border: none;
+        padding: 0.7em 0;
+        width: 100%;
+        margin-top: 1em;
         transition: background 0.2s;
     }
     .stButton>button:hover {
-        background-color: #b8001a;
-    }
-    .st-bb {
-        background-color: #fff;
-        border-radius: 10px;
-        padding: 1em;
-        margin-bottom: 1em;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
-    .stSidebar {
-        background-color: #f2f4f8 !important;
+        background: #b8001a;
     }
     .stTextInput > div > div > input, .stTextInput input {
-        padding: 0.5em 1em;
+        padding: 0.6em 1em;
         border-radius: 8px;
-        border: 1.5px solid #eee;
+        border: 1.5px solid #e0e0e0;
         font-size: 1em;
-        box-sizing: border-box;
+        background: #fafbfc;
+        margin-bottom: 0.5em;
     }
     .stSelectbox > div > div {
         border-radius: 8px !important;
-        border: 1.5px solid #eee !important;
+        border: 1.5px solid #e0e0e0 !important;
         font-size: 1em !important;
-        /* padding: 0.5em 1em !important; */
-        box-sizing: border-box;
+        background: #fafbfc !important;
     }
     .stSelectbox label, .stTextInput label {
         font-weight: 500;
         margin-bottom: 0.2em;
     }
+    .st-bb {
+        background: #fff;
+        border-radius: 14px;
+        padding: 1.2em 1em;
+        margin-bottom: 1.2em;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
     .stChatMessage {
         border-radius: 10px;
         padding: 0.5em 1em;
         margin-bottom: 0.5em;
+        background: #f8fafd;
     }
-    .stSidebar .css-1d391kg { /* Título da sidebar */
+    .stSidebar .css-1d391kg {
         font-size: 1.5em;
         color: #E60023;
         font-weight: bold;
+    }
+    .main-title {
+        text-align: center;
+        margin-top: 1.5em;
+        margin-bottom: 0.2em;
+        color: #E60023;
+        font-size: 2.7em;
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+    .main-subtitle {
+        text-align: center;
+        color: #444;
+        font-size: 1.1em;
+        margin-bottom: 2em;
+    }
+    .status-card {
+        background: #eaf3fb;
+        color: #1a4b7a;
+        border-radius: 10px;
+        padding: 1em 1.5em;
+        margin: 2em auto 0 auto;
+        max-width: 600px;
+        font-size: 1.1em;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(30,80,180,0.04);
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# ====== Sidebar com logo e inputs ======
+# ====== Sidebar com logo e inputs em cards ======
 st.sidebar.image("assets/logo_agnostic.png", use_container_width=True)
 st.sidebar.markdown("<h2 style='color:#E60023; margin-bottom:0;'>AgnostiChat</h2>", unsafe_allow_html=True)
 st.sidebar.markdown("<small>powered by AgnosticData</small>", unsafe_allow_html=True)
 
-st.sidebar.header("🔗 Conexão Elasticsearch")
-with st.sidebar.container():
-    host = st.text_input(
-        "Host do Elasticsearch",
-        value=st.session_state.get("es_host", os.getenv("ES_HOST", ""))
-    )
-    api_key = st.text_input(
-        "API Key do Elasticsearch",
-        type="password",
-        value=st.session_state.get("es_api_key", os.getenv("ES_API_KEY", ""))
-    )
-
-st.sidebar.header("🤖 Conexão LLM")
-with st.sidebar.container():
-    llm_provider_default = st.session_state.get("llm_provider", os.getenv("LLM_PROVIDER", "openai"))
-    llm_provider = st.selectbox(
-        "Provider LLM",
-        ["openai", "ollama"],
-        index=0 if llm_provider_default != "ollama" else 1,
-        key="llm_provider"
-    )
-    llm_api_key = st.text_input(
-        "API Key do LLM (OpenAI/Ollama)",
-        type="password",
-        value=st.session_state.get("llm_api_key", os.getenv("LLM_API_KEY", ""))
-    )
-
-if st.sidebar.button("Testar Conexão Elasticsearch"):
+# Renderizar cards diretamente na sidebar, sem bloco with
+st.sidebar.markdown("<div class='sidebar-card'>", unsafe_allow_html=True)
+st.sidebar.markdown("<h3>🔗 Conexão Elasticsearch</h3>", unsafe_allow_html=True)
+host = st.sidebar.text_input(
+    "Host do Elasticsearch",
+    value=st.session_state.get("es_host", os.getenv("ES_HOST", "")),
+    placeholder="http://localhost:9200"
+)
+api_key = st.sidebar.text_input(
+    "API Key do Elasticsearch",
+    type="password",
+    value=st.session_state.get("es_api_key", os.getenv("ES_API_KEY", "")),
+    placeholder="Opcional"
+)
+st.sidebar.markdown("</div>", unsafe_allow_html=True)
+st.sidebar.markdown("<div class='sidebar-card'>", unsafe_allow_html=True)
+st.sidebar.markdown("<h3>🤖 Conexão LLM</h3>", unsafe_allow_html=True)
+llm_provider_default = st.session_state.get("llm_provider", os.getenv("LLM_PROVIDER", "openai"))
+llm_provider = st.sidebar.selectbox(
+    "Provider LLM",
+    ["openai", "ollama"],
+    index=0 if llm_provider_default != "ollama" else 1,
+    key="llm_provider"
+)
+llm_api_key = st.sidebar.text_input(
+    "API Key do LLM (OpenAI/Ollama)",
+    type="password",
+    value=st.session_state.get("llm_api_key", os.getenv("LLM_API_KEY", "")),
+    placeholder="Cole sua chave aqui"
+)
+st.sidebar.markdown("</div>", unsafe_allow_html=True)
+if st.sidebar.button("Testar Conexão"):
     try:
         client = conectar_elasticsearch(host, api_key)
         indices = client.cat.indices()
-        
         # Salva as configurações no .env
         if salvar_configuracoes_env(host, api_key, llm_api_key, llm_provider):
             st.success("Configurações salvas com sucesso!")
-        
         st.session_state["es_host"] = host
         st.session_state["es_api_key"] = api_key
         st.session_state["llm_api_key"] = llm_api_key
@@ -141,14 +193,9 @@ if st.sidebar.button("Testar Conexão Elasticsearch"):
         st.session_state["es_client"] = None
         st.error(f"Erro ao conectar no Elasticsearch: {e}")
 
-# ====== Título principal ======
-st.markdown("""
-<div style='display:flex; align-items:center; gap:1em;'>
-</div>
-""", unsafe_allow_html=True)
-st.image("assets/logo_agnostic.png", width=60)
-st.markdown("<h1 style='color:#E60023; margin-bottom:0; font-size:2.5em;'>AgnostiChat</h1>", unsafe_allow_html=True)
-st.markdown("<small>Interface conversacional para Elasticsearch com LLM</small>", unsafe_allow_html=True)
+# ====== Título principal centralizado ======
+st.markdown("<div class='main-title'>AgnostiChat</div>", unsafe_allow_html=True)
+st.markdown("<div class='main-subtitle'>Interface conversacional para Elasticsearch com LLM</div>", unsafe_allow_html=True)
 
 # ====== Seleção de Índice ======
 if st.session_state.get("es_client"):
@@ -191,7 +238,7 @@ if st.session_state.get("es_client"):
         except Exception as e:
             st.error(f"Erro ao listar índices: {e}")
 else:
-    st.info("Conecte-se ao Elasticsearch para listar os índices.")
+    st.markdown("<div class='status-card'>Conecte-se ao Elasticsearch para listar os índices.</div>", unsafe_allow_html=True)
 
 # ====== Chat ======
 if st.session_state.get("mapping") and st.session_state.get("amostras"):
