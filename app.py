@@ -244,16 +244,76 @@ if st.session_state.get("mapping") and st.session_state.get("amostras"):
                             body=json.loads(query_dsl_json)
                         )
                         # Exibe agregações se existirem, senão exibe hits
-                        if "aggregations" in res:
+                        tem_aggs = "aggregations" in res
+                        tem_hits = "hits" in res and res["hits"].get("hits")
+                        if tem_aggs:
                             st.subheader("Resultado da agregação")
                             st.json(res["aggregations"])
-                        else:
+                        if tem_hits:
                             st.json(res["hits"]["hits"])
+                        # Monta prompt de interpretação considerando ambos
+                        if tem_aggs and tem_hits:
+                            prompt_interpretacao = f"""
+Pergunta do usuário:
+{pergunta}
+
+Query DSL executada:
+{query_dsl_json}
+
+Resultado de agregação retornado do Elasticsearch:
+{json.dumps(res['aggregations'], ensure_ascii=False, indent=2)}
+
+Documentos retornados do Elasticsearch (mostrando até 5 exemplos):
+{json.dumps(res['hits']['hits'][:5], ensure_ascii=False, indent=2)}
+
+Explique de forma resumida e clara o que significa esse resultado para o usuário, considerando tanto as agregações quanto os documentos.
+"""
+                        elif tem_aggs:
+                            prompt_interpretacao = f"""
+Pergunta do usuário:
+{pergunta}
+
+Query DSL executada:
+{query_dsl_json}
+
+Resultado de agregação retornado do Elasticsearch:
+{json.dumps(res['aggregations'], ensure_ascii=False, indent=2)}
+
+Explique de forma resumida e clara o que significa esse resultado de agregação para o usuário.
+"""
+                        elif tem_hits:
+                            exemplos = res["hits"]["hits"][:5] if isinstance(res["hits"]["hits"], list) else res["hits"]["hits"]
+                            prompt_interpretacao = f"""
+Pergunta do usuário:
+{pergunta}
+
+Query DSL executada:
+{query_dsl_json}
+
+Documentos retornados do Elasticsearch (mostrando até 5 exemplos):
+{json.dumps(exemplos, ensure_ascii=False, indent=2)}
+
+Resuma os principais achados ou padrões, ou responda à pergunta do usuário com base nesses documentos.
+"""
+                        else:
+                            prompt_interpretacao = f"""
+Pergunta do usuário:
+{pergunta}
+
+Query DSL executada:
+{query_dsl_json}
+
+Nenhum resultado retornado do Elasticsearch.
+"""
                         st.session_state["chat_history"].append({
                             "role": "assistant",
                             "content": "Resultados da consulta:",
-                            "result": res.get("aggregations", res["hits"]["hits"])
+                            "result": res.get("aggregations", res["hits"]["hits"] if tem_hits else None)
                         })
+                        # ====== Interpretação do resultado pelo LLM ======
+                        interpretacao = enviar_prompt_pergunta(llm_client, prompt_interpretacao)
+                        st.markdown("**Interpretação do resultado:**")
+                        st.write(interpretacao.content if hasattr(interpretacao, 'content') else interpretacao)
                 except Exception as e:
                     st.error(f"Erro no processamento: {e}")
                     st.session_state["chat_history"].append({
