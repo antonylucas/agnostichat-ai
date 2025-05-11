@@ -1,12 +1,12 @@
 """
-Utilitários para interação com o Elasticsearch (versão desenvolvimento)
+Utilitários para interação com o Elasticsearch
 """
 
 from elasticsearch import Elasticsearch
 
-def conectar_elasticsearch(host="http://localhost:9200", api_key=None):
+def conectar_elasticsearch(host, api_key):
     """Conecta ao Elasticsearch e retorna o client."""
-    client = Elasticsearch(hosts=[host], verify_certs=False)
+    client = Elasticsearch(hosts=[host], api_key=api_key, verify_certs=False)
     # Testa conexão
     if not client.ping():
         raise Exception("Não foi possível conectar ao Elasticsearch.")
@@ -33,18 +33,4 @@ def buscar_amostras(client, indice, n=5):
         }
     }
     res = client.search(index=indice, body=query)
-    return [hit["_source"] for hit in res["hits"]["hits"]]
-
-def criar_indice(client, nome_indice, mapping=None):
-    """Cria um novo índice com o mapping opcional."""
-    if not client.indices.exists(index=nome_indice):
-        if mapping:
-            client.indices.create(index=nome_indice, body=mapping)
-        else:
-            client.indices.create(index=nome_indice)
-        return True
-    return False
-
-def adicionar_documento(client, indice, documento):
-    """Adiciona um documento ao índice."""
-    return client.index(index=indice, body=documento) 
+    return [hit["_source"] for hit in res["hits"]["hits"]] 
