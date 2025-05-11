@@ -263,10 +263,13 @@ Query DSL executada:
 Resultado de agregação retornado do Elasticsearch:
 {json.dumps(res['aggregations'], ensure_ascii=False, indent=2)}
 
-Documentos retornados do Elasticsearch (mostrando até 5 exemplos):
-{json.dumps(res['hits']['hits'][:5], ensure_ascii=False, indent=2)}
+Documentos retornados do Elasticsearch (mostrando até 10 exemplos):
+{json.dumps(res['hits']['hits'][:10], ensure_ascii=False, indent=2)}
 
-Explique de forma resumida e clara o que significa esse resultado para o usuário, considerando tanto as agregações quanto os documentos.
+IMPORTANTE:
+- Se a agregação não trouxer resultado, analise os documentos retornados e extraia a resposta a partir deles.
+- Liste os valores únicos do campo mais relevante para a pergunta (ex: 'city' se a pergunta for sobre cidades).
+- Responda de forma clara e objetiva, focando no que foi solicitado pelo usuário.
 """
                         elif tem_aggs:
                             prompt_interpretacao = f"""
@@ -282,7 +285,7 @@ Resultado de agregação retornado do Elasticsearch:
 Explique de forma resumida e clara o que significa esse resultado de agregação para o usuário.
 """
                         elif tem_hits:
-                            exemplos = res["hits"]["hits"][:5] if isinstance(res["hits"]["hits"], list) else res["hits"]["hits"]
+                            exemplos = res["hits"]["hits"][:10] if isinstance(res["hits"]["hits"], list) else res["hits"]["hits"]
                             prompt_interpretacao = f"""
 Pergunta do usuário:
 {pergunta}
@@ -290,10 +293,12 @@ Pergunta do usuário:
 Query DSL executada:
 {query_dsl_json}
 
-Documentos retornados do Elasticsearch (mostrando até 5 exemplos):
+Documentos retornados do Elasticsearch (mostrando até 10 exemplos):
 {json.dumps(exemplos, ensure_ascii=False, indent=2)}
 
-Resuma os principais achados ou padrões, ou responda à pergunta do usuário com base nesses documentos.
+IMPORTANTE:
+- Liste os valores únicos do campo mais relevante para a pergunta (ex: 'city' se a pergunta for sobre cidades).
+- Responda de forma clara e objetiva, focando no que foi solicitado pelo usuário.
 """
                         else:
                             prompt_interpretacao = f"""
