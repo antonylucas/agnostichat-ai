@@ -64,3 +64,44 @@ LLM_PROVIDER=openai
 - `elasticsearch_utils.py`: Funções para interagir com o Elasticsearch
 - `llm_utils.py`: Funções para interagir com o LLM
 - `prompt_builder.py`: Montagem do prompt para o LLM
+
+## Implementando Elasticsearch and Gerando indices sample de dados
+
+### Deploying Elasticsearch Container
+
+1. Navegue até o diretório do container:
+```bash
+cd docker/elastic-test
+```
+
+2. Inicie o container do Elasticsearch:
+```bash
+docker-compose up -d
+```
+
+O Elasticsearch estará disponível em `http://localhost:9200`.
+
+### Gerando Dados de Exemplo
+
+Os scripts de exemplo geram dados realistas para dois índices:
+- `customer_analytics`: Dados de clientes e suas interações
+- `marketing_analytics`: Dados de campanhas de marketing
+
+Para gerar os dados:
+
+1. Pré requisito: Instale as dependências necessárias no passo anterior na raiz do projeto (linha 28)
+
+2. Execute os scripts de geração de dados:
+```bash
+cd docker/elastic-test/data-sample
+python generate_customer_data.py
+python generate_marketing_data.py
+```
+
+Os scripts irão:
+- Criar os índices com os mappings apropriados
+- Gerar 1000 documentos de dados de clientes
+- Gerar 3500 documentos de dados de marketing
+- Exibir o progresso da geração e o total de documentos inseridos
+
+Após a execução, você pode usar o AgnostiChat para fazer consultas em linguagem natural sobre estes dados.
