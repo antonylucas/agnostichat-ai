@@ -6,6 +6,7 @@ import json
 from dotenv import load_dotenv
 import os
 import re
+from query_utils import ajustar_query_keyword
 
 def salvar_configuracoes_env(host, api_key, llm_api_key, llm_provider):
     """Salva as configurações no arquivo .env"""
@@ -286,9 +287,12 @@ if st.session_state.get("mapping") and st.session_state.get("amostras"):
                     })
                     with st.spinner("Executando query no Elasticsearch..."):
                         query_dsl_json = extrair_json(query_dsl_str)
+                        query_dict = json.loads(query_dsl_json)
+                        # Ajuste automático de campos text para .keyword em agregações
+                        query_dict = ajustar_query_keyword(query_dict, st.session_state["mapping"])
                         res = st.session_state["es_client"].search(
                             index=st.session_state["indice_selecionado"],
-                            body=json.loads(query_dsl_json)
+                            body=query_dict
                         )
                         # Exibe agregações se existirem, senão exibe hits
                         tem_aggs = "aggregations" in res
