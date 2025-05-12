@@ -5,8 +5,28 @@ Utilitários para interação com o Elasticsearch (versão desenvolvimento)
 from elasticsearch import Elasticsearch
 
 def conectar_elasticsearch(host="http://localhost:9200", api_key=None):
-    """Conecta ao Elasticsearch e retorna o client."""
-    client = Elasticsearch(hosts=[host], verify_certs=False)
+    """
+    Conecta ao Elasticsearch e retorna o client.
+    
+    Args:
+        host (str): Endpoint do Elasticsearch. Padrão: http://localhost:9200
+        api_key (str, optional): Chave API para autenticação. Necessária para Elastic Cloud.
+    
+    Returns:
+        Elasticsearch: Cliente conectado ao Elasticsearch
+    """
+    # Configuração base do cliente
+    client_config = {
+        "hosts": [host],
+        "verify_certs": False
+    }
+    
+    # Adiciona api_key se fornecida
+    if api_key:
+        client_config["api_key"] = api_key
+    
+    client = Elasticsearch(**client_config)
+    
     # Testa conexão
     if not client.ping():
         raise Exception("Não foi possível conectar ao Elasticsearch.")
