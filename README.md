@@ -31,13 +31,18 @@ pip install -r requirements.txt
 # 3. (Opcional) Configure o arquivo .env na raiz do projeto
 cp .env.example .env  # ou crie manualmente
 
-# 4. Rode a aplicação
+# 4. Inicie os containers Docker
+docker-compose up -d  # Inicia o container do agnostichat
+cd docker-examples/elastic-test
+docker-compose up -d  # Inicia o container do Elasticsearch
+
+# 5. Rode a aplicação
 streamlit run app.py
 ```
 
 ## Exemplo de .env
 ```
-ES_HOST=http://localhost:9200
+ES_HOST=http://agnostichat-elastic:9200
 ES_API_KEY=
 LLM_API_KEY=
 LLM_PROVIDER=openai
@@ -67,41 +72,28 @@ LLM_PROVIDER=openai
 
 ## Implementando Elasticsearch and Gerando indices sample de dados
 
-### Deploying Elasticsearch Container
+### Deploying Elasticsearch Container e Gerando Dados de Exemplo
 
 1. Navegue até o diretório do container:
 ```bash
-cd docker/elastic-test
+cd docker-examples/elastic-test
 ```
 
-2. Inicie o container do Elasticsearch:
+2. Inicie o Elasticsearch e gere os dados de exemplo automaticamente:
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
 
-O Elasticsearch estará disponível em `http://localhost:9200`.
+O Elasticsearch estará disponível em `http://agnostichat-elastic:9200` dentro da rede Docker.  
+Os índices `customer_analytics` e `marketing_analytics` serão criados automaticamente com dados de exemplo.
 
-### Gerando Dados de Exemplo
+#### (Opcional) Gerar dados manualmente
 
-Os scripts de exemplo geram dados realistas para dois índices:
-- `customer_analytics`: Dados de clientes e suas interações
-- `marketing_analytics`: Dados de campanhas de marketing
-
-Para gerar os dados:
-
-1. Pré requisito: Instale as dependências necessárias no passo anterior na raiz do projeto (linha 28)
-
-2. Execute os scripts de geração de dados:
+Se precisar regenerar os dados:
 ```bash
-cd docker/elastic-test/data-sample
+cd docker-examples/elastic-test/data-sample
 python generate_customer_data.py
 python generate_marketing_data.py
 ```
-
-Os scripts irão:
-- Criar os índices com os mappings apropriados
-- Gerar 1000 documentos de dados de clientes
-- Gerar 3500 documentos de dados de marketing
-- Exibir o progresso da geração e o total de documentos inseridos
 
 Após a execução, você pode usar o AgnostiChat para fazer consultas em linguagem natural sobre estes dados.

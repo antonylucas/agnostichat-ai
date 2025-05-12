@@ -15,7 +15,7 @@ NUM_DOCUMENTS = 3500
 fake = Faker('pt_BR')
 
 # Conecta ao Elasticsearch
-es = Elasticsearch("http://localhost:9200")
+es = Elasticsearch("http://agnostichat-elastic:9200")
 
 # Mapping do índice
 mapping = {
