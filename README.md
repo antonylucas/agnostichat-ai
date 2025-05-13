@@ -21,23 +21,19 @@ AgnostiChat é uma interface conversacional que permite usuários interagirem co
 
 ## Como executar
 ```bash
-# 1. Crie e ative um virtualenv (opcional, mas recomendado)
-python3 -m venv .venv
-source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/agnostichat.git
+cd agnostichat
 
-# 2. Instale as dependências
-pip install -r requirements.txt
-
-# 3. (Opcional) Configure o arquivo .env na raiz do projeto
+# 2. Configure o arquivo .env (opcional)
 cp .env.example .env  # ou crie manualmente
 
-# 4. Inicie os containers Docker
+# 3. Inicie os containers Docker
 docker-compose up -d  # Inicia o container do agnostichat
-cd docker-examples/elastic-test
-docker-compose up -d  # Inicia o container do Elasticsearch
 
-# 5. Rode a aplicação
-streamlit run app.py
+
+# 4. Acesse a aplicação
+Acesse http://localhost:8501 no seu navegador
 ```
 
 ## Exemplo de .env
