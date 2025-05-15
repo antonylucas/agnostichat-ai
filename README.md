@@ -19,9 +19,26 @@ AgnostiChat é uma interface conversacional que permite usuários interagirem co
 - Execução da query e exibição dos resultados no chat
 - Histórico de perguntas e respostas
 
-## Como executar
+## Como executar via Container
 ```bash
-# 1. Crie e ative um virtualenv (opcional, mas recomendado)
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/agnostichat.git
+cd agnostichat
+
+# 2. Configure o arquivo .env (opcional)
+cp .env.example .env  # ou crie manualmente
+
+# 3. Inicie os containers Docker
+docker-compose up -d  # Inicia o container do agnostichat
+
+
+# 4. Acesse a aplicação
+Acesse http://localhost:8501 no seu navegador
+```
+
+# Ou virtualenv
+```bash
+# 1. Crie e ative um virtualenv (opcional)
 python3 -m venv .venv
 source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
 
@@ -33,11 +50,12 @@ cp .env.example .env  # ou crie manualmente
 
 # 4. Rode a aplicação
 streamlit run app.py
+
 ```
 
 ## Exemplo de .env
 ```
-ES_HOST=http://localhost:9200
+ES_HOST=http://agnostichat-elastic:9200
 ES_API_KEY=
 LLM_API_KEY=
 LLM_PROVIDER=openai
@@ -67,41 +85,28 @@ LLM_PROVIDER=openai
 
 ## Implementando Elasticsearch and Gerando indices sample de dados
 
-### Deploying Elasticsearch Container
+### Deploying Elasticsearch Container e Gerando Dados de Exemplo
 
 1. Navegue até o diretório do container:
 ```bash
-cd docker/elastic-test
+cd docker-examples/elastic-test
 ```
 
-2. Inicie o container do Elasticsearch:
+2. Inicie o Elasticsearch e gere os dados de exemplo automaticamente:
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
 
-O Elasticsearch estará disponível em `http://localhost:9200`.
+O Elasticsearch estará disponível em `http://agnostichat-elastic:9200` dentro da rede Docker.  
+Os índices `customer_analytics` e `marketing_analytics` serão criados automaticamente com dados de exemplo.
 
-### Gerando Dados de Exemplo
+#### (Opcional) Gerar dados manualmente
 
-Os scripts de exemplo geram dados realistas para dois índices:
-- `customer_analytics`: Dados de clientes e suas interações
-- `marketing_analytics`: Dados de campanhas de marketing
-
-Para gerar os dados:
-
-1. Pré requisito: Instale as dependências necessárias no passo anterior na raiz do projeto (linha 28)
-
-2. Execute os scripts de geração de dados:
+Se precisar regenerar os dados:
 ```bash
-cd docker/elastic-test/data-sample
+cd docker-examples/elastic-test/data-sample
 python generate_customer_data.py
 python generate_marketing_data.py
 ```
-
-Os scripts irão:
-- Criar os índices com os mappings apropriados
-- Gerar 1000 documentos de dados de clientes
-- Gerar 3500 documentos de dados de marketing
-- Exibir o progresso da geração e o total de documentos inseridos
 
 Após a execução, você pode usar o AgnostiChat para fazer consultas em linguagem natural sobre estes dados.

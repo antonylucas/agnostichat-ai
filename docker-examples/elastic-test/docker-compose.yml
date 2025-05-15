@@ -13,12 +13,21 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
-      - elastic
+      - agnostichat_agnostichat-network
+
+  init-data:
+    build:
+      context: ../..  # Contexto corrigido para a raiz do projeto
+      dockerfile: docker-examples/elastic-test/Dockerfile.init
+    depends_on:
+      - elasticsearch
+    networks:
+      - agnostichat_agnostichat-network
 
 volumes:
   elasticsearch-data:
     driver: local
 
 networks:
-  elastic:
-    driver: bridge 
+  agnostichat_agnostichat-network:
+    external: true 
