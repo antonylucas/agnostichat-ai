@@ -19,7 +19,7 @@ AgnostiChat é uma interface conversacional que permite usuários interagirem co
 - Execução da query e exibição dos resultados no chat
 - Histórico de perguntas e respostas
 
-## Como executar
+## Como executar via Container
 ```bash
 # 1. Clone o repositório
 git clone https://github.com/seu-usuario/agnostichat.git
@@ -34,6 +34,23 @@ docker-compose up -d  # Inicia o container do agnostichat
 
 # 4. Acesse a aplicação
 Acesse http://localhost:8501 no seu navegador
+```
+
+# Ou virtualenv
+```bash
+# 1. Crie e ative um virtualenv (opcional)
+python3 -m venv .venv
+source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
+
+# 2. Instale as dependências
+pip install -r requirements.txt
+
+# 3. (Opcional) Configure o arquivo .env na raiz do projeto
+cp .env.example .env  # ou crie manualmente
+
+# 4. Rode a aplicação
+streamlit run app.py
+
 ```
 
 ## Exemplo de .env
