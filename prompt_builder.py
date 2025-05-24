@@ -37,8 +37,8 @@ Pergunta do usuário:
 {pergunta}
 
 IMPORTANTE:
-- Retorne apenas a query DSL do Elasticsearch, sem explicações ou comentários.
-- A query deve estar entre blocos de código ```json.
-- Não inclua nenhum texto extra além da query.
+- Retorne apenas o JSON da query DSL do Elasticsearch, sem GET, sem blocos de código, sem explicações ou comentários.
+- Exemplo de resposta esperada: {{ "size": 0, "query": {{ ... }} }}
+- Não inclua nenhum texto extra além do JSON.
 """
     return prompt 

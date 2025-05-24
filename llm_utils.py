@@ -9,9 +9,9 @@ def conectar_llm(api_key, provider="openai", ollama_host=None):
     """Retorna o cliente LLM configurado para OpenAI ou Ollama."""
     if provider == "openai":
         return ChatOpenAI(api_key=api_key, temperature=0.1)
-    elif provider == "ollama":
-        base_url = ollama_host or os.getenv("OLLAMA_HOST", "http://localhost:11434")
-        return ChatOllama(base_url=base_url, temperature=0.1)
+    elif provider == "ollama (local)":
+        # Sempre usa o nome do serviço Docker para Ollama
+        return ChatOllama(base_url="http://ollama:11434", model="codellama:7b-instruct", temperature=0.1)
     else:
         raise ValueError("Provider LLM não suportado.")
 
