@@ -24,10 +24,15 @@ LLM_PROVIDER={llm_provider}
         return False
 
 def extrair_json(texto):
+    # Primeiro tenta extrair bloco ```json ... ```
     match = re.search(r"```json\s*([\s\S]+?)\s*```", texto)
     if match:
         return match.group(1)
-    # Se não encontrar, tenta remover blocos de código simples
+    # Se não encontrar, tenta extrair o primeiro bloco { ... }
+    match = re.search(r"({[\s\S]+})", texto)
+    if match:
+        return match.group(1)
+    # Se não encontrar, remove blocos de código simples e retorna
     return texto.strip('` \n')
 
 load_dotenv()
@@ -167,16 +172,21 @@ st.sidebar.markdown("<h3>🤖 Conexão LLM</h3>", unsafe_allow_html=True)
 llm_provider_default = st.session_state.get("llm_provider", os.getenv("LLM_PROVIDER", "openai"))
 llm_provider = st.sidebar.selectbox(
     "Provider LLM",
-    ["openai", "ollama"],
+    ["openai", "ollama (local)"],
     index=0 if llm_provider_default != "ollama" else 1,
     key="llm_provider"
 )
-llm_api_key = st.sidebar.text_input(
-    "API Key do LLM (OpenAI/Ollama)",
-    type="password",
-    value=st.session_state.get("llm_api_key", os.getenv("LLM_API_KEY", "")),
-    placeholder="Cole sua chave aqui"
-)
+
+# Só mostra o campo de API Key se não for Ollama
+if llm_provider != "ollama (local)":
+    llm_api_key = st.sidebar.text_input(
+        "API Key do LLM (OpenAI/Ollama)",
+        type="password",
+        value=st.session_state.get("llm_api_key", os.getenv("LLM_API_KEY", "")),
+        placeholder="Cole sua chave aqui"
+    )
+else:
+    llm_api_key = ""  # API Key vazia para Ollama
 st.sidebar.markdown("</div>", unsafe_allow_html=True)
 if st.sidebar.button("Testar Conexão"):
     try:
