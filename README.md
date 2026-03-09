@@ -1,112 +1,131 @@
 # AgnostiChat
 
-AgnostiChat é uma interface conversacional que permite usuários interagirem com dados armazenados no Elasticsearch usando linguagem natural. O sistema converte perguntas em queries DSL do Elasticsearch, tornando a busca e análise de dados mais acessível e intuitiva.
+AgnostiChat is a conversational interface that allows users to interact with data stored in Elasticsearch using natural language. The system converts questions into Elasticsearch DSL queries, making data search and analysis more accessible and intuitive.
 
-## Stack
+## Tech Stack
+
 - Python
 - Streamlit (Frontend)
-- Elasticsearch (Backend de dados)
-- LLM (OpenAI API ou Ollama local)
-- LangChain (integração com LLMs)
-- python-dotenv (variáveis de ambiente)
+- Elasticsearch (Data backend)
+- LLM (OpenAI API or local Ollama)
+- LangChain (LLM integration)
+- python-dotenv (Environment variables)
 
-## Funcionalidades
-- Conexão fácil com Elasticsearch (host e API Key via interface ou .env)
-- Seleção de índice e exibição do mapping e amostras reais
-- Montagem automática de prompt detalhado para LLM
-- Integração com OpenAI e Ollama (local)
-- Geração automática de queries DSL do Elasticsearch via linguagem natural
-- Execução da query e exibição dos resultados no chat
-- Histórico de perguntas e respostas
+## Features
 
-## Como executar via Container
+- Easy Elasticsearch connection (host and API Key via UI or .env)
+- Index selection with mapping and real sample data display
+- Automatic detailed prompt assembly for the LLM
+- Integration with OpenAI and Ollama (local)
+- Automatic Elasticsearch DSL query generation from natural language
+- Query execution and result display in chat
+- Question and answer history
+
+## Running with Docker
+
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/agnostichat.git
-cd agnostichat
+# 1. Clone the repository
+git clone https://github.com/antonylucas/agnostichat-ai.git
+cd agnostichat-ai
 
-# 2. Configure o arquivo .env (opcional)
-cp .env.example .env  # ou crie manualmente
+# 2. Configure the .env file (optional)
+cp .env.example .env  # or create manually
 
-# 3. Inicie os containers Docker
-docker-compose up -d  # Inicia o container do agnostichat
+# 3. Start the Docker containers
+docker-compose up -d
 
-
-# 4. Acesse a aplicação
-Acesse http://localhost:8501 no seu navegador
+# 4. Access the application
+# Open http://localhost:8501 in your browser
 ```
 
-# Ou virtualenv
-```bash
-# 1. Crie e ative um virtualenv (opcional)
-python3 -m venv .venv
-source .venv/bin/activate  # ou .venv\Scripts\activate no Windows
+## Running with virtualenv
 
-# 2. Instale as dependências
+```bash
+# 1. Create and activate a virtualenv
+python3 -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. (Opcional) Configure o arquivo .env na raiz do projeto
-cp .env.example .env  # ou crie manualmente
+# 3. (Optional) Configure the .env file at the project root
+cp .env.example .env  # or create manually
 
-# 4. Rode a aplicação
+# 4. Run the application
 streamlit run app.py
-
 ```
 
-## Exemplo de .env
+## Environment Variables
+
 ```
-ES_HOST=http://agnostichat-elastic:9200
+ES_HOST=http://localhost:9200
 ES_API_KEY=
 LLM_API_KEY=
 LLM_PROVIDER=openai
 ```
 
-## Como usar
-1. Preencha as credenciais na sidebar (ou use o .env para preencher automaticamente).
-2. Clique em "Testar Conexão Elasticsearch".
-3. Selecione um índice.
-4. Veja o mapping e amostras de documentos.
-5. Faça perguntas no chat usando linguagem natural.
-6. Veja a query DSL gerada e os resultados.
+See `.env.example` for a complete template with descriptions.
 
-## Dependências principais
-- streamlit
-- elasticsearch
-- requests
-- python-dotenv
-- langchain-openai
-- langchain-community
+## How to Use
 
-## Estrutura Inicial
-- `app.py`: Aplicação principal
-- `elasticsearch_utils.py`: Funções para interagir com o Elasticsearch
-- `llm_utils.py`: Funções para interagir com o LLM
-- `prompt_builder.py`: Montagem do prompt para o LLM
+1. Fill in the credentials in the sidebar (or use .env for auto-fill).
+2. Click "Testar Conexão" (Test Connection).
+3. Select an index.
+4. View the mapping and sample documents.
+5. Ask questions in the chat using natural language.
+6. See the generated DSL query and results.
 
-## Implementando Elasticsearch and Gerando indices sample de dados
+## Project Structure
 
-### Deploying Elasticsearch Container e Gerando Dados de Exemplo
+- `app.py` — Main application
+- `elasticsearch_utils.py` — Elasticsearch interaction utilities
+- `llm_utils.py` — LLM interaction utilities
+- `prompt_builder.py` — Prompt assembly for the LLM
+- `query_utils.py` — Query adjustment utilities (.keyword field handling)
 
-1. Navegue até o diretório do container:
+## Sample Data Setup
+
+### Deploying Elasticsearch and Generating Sample Indices
+
+1. Navigate to the container directory:
 ```bash
 cd docker-examples/elastic-test
 ```
 
-2. Inicie o Elasticsearch e gere os dados de exemplo automaticamente:
+2. Start Elasticsearch and generate sample data automatically:
 ```bash
 docker-compose up --build
 ```
 
-O Elasticsearch estará disponível em `http://agnostichat-elastic:9200` dentro da rede Docker.  
-Os índices `customer_analytics` e `marketing_analytics` serão criados automaticamente com dados de exemplo.
+Elasticsearch will be available at `http://agnostichat-elastic:9200` within the Docker network.
+The `customer_analytics` and `marketing_analytics` indices will be created automatically with sample data.
 
-#### (Opcional) Gerar dados manualmente
+#### (Optional) Generate Data Manually
 
-Se precisar regenerar os dados:
+If you need to regenerate the data:
 ```bash
 cd docker-examples/elastic-test/data-sample
 python generate_customer_data.py
 python generate_marketing_data.py
 ```
 
-Após a execução, você pode usar o AgnostiChat para fazer consultas em linguagem natural sobre estes dados.
+After running, you can use AgnostiChat to query this data using natural language.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
+
+## Development
+
+```bash
+# Lint
+ruff check .
+
+# Format
+ruff format .
+
+# Type check
+mypy .
+```
+
+See [CLAUDE.md](CLAUDE.md) for detailed project instructions and coding conventions.
