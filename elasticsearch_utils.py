@@ -16,14 +16,11 @@ def conectar_elasticsearch(host="http://localhost:9200", api_key=None):
     Returns:
         Elasticsearch: Cliente conectado ao Elasticsearch
     """
-    # Configuração base do cliente
-    client_config = {"hosts": [host], "verify_certs": False}
-
-    # Adiciona api_key se fornecida
+    # Cria o cliente com os parâmetros apropriados
     if api_key:
-        client_config["api_key"] = api_key
-
-    client = Elasticsearch(**client_config)
+        client = Elasticsearch(hosts=[host], verify_certs=False, api_key=api_key)
+    else:
+        client = Elasticsearch(hosts=[host], verify_certs=False)
 
     # Testa conexão
     if not client.ping():
