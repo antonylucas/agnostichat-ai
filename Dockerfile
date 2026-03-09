@@ -19,11 +19,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Expose the port Streamlit runs on
-EXPOSE 8501
+# Expose the port NiceGUI runs on
+EXPOSE 8080
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 
 # Command to run the application
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"] 
+CMD ["python", "app_nicegui.py"]
