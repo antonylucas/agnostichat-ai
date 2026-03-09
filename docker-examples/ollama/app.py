@@ -1,6 +1,7 @@
-import streamlit as st
-import requests
 import os
+
+import requests
+import streamlit as st
 
 st.title("CodeLlama SQL/Elasticsearch Query Generator")
 
@@ -9,7 +10,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # System prompt for SQL/Elasticsearch query generation
-SYSTEM_PROMPT = """You are an expert SQL and Elasticsearch query generator. 
+SYSTEM_PROMPT = """You are an expert SQL and Elasticsearch query generator.
 Your task is to help users generate accurate and efficient queries based on their requirements.
 When generating queries:
 1. Consider performance optimization
@@ -26,7 +27,7 @@ for message in st.session_state.messages:
 if prompt := st.chat_input("Describe the query you need (SQL or Elasticsearch)?"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
+
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -39,14 +40,10 @@ if prompt := st.chat_input("Describe the query you need (SQL or Elasticsearch)?"
             "model": "codellama:13b-instruct",
             "prompt": f"{SYSTEM_PROMPT}\n\nUser: {prompt}\nAssistant:",
             "stream": False,
-            "options": {
-                "temperature": 0.7,
-                "top_p": 0.9,
-                "num_predict": 1024
-            }
-        }
+            "options": {"temperature": 0.7, "top_p": 0.9, "num_predict": 1024},
+        },
     )
-    
+
     if response.status_code == 200:
         assistant_response = response.json()["response"]
     else:
@@ -54,7 +51,7 @@ if prompt := st.chat_input("Describe the query you need (SQL or Elasticsearch)?"
 
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": assistant_response})
-    
+
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        st.markdown(assistant_response) 
+        st.markdown(assistant_response)

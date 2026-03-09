@@ -1,9 +1,10 @@
 """
 Utilitários para interação com o LLM (OpenAI ou Ollama)
 """
-from langchain_openai import ChatOpenAI
+
 from langchain_community.chat_models import ChatOllama
-import os
+from langchain_openai import ChatOpenAI
+
 
 def conectar_llm(api_key, provider="openai", ollama_host=None):
     """Retorna o cliente LLM configurado para OpenAI ou Ollama."""
@@ -15,6 +16,7 @@ def conectar_llm(api_key, provider="openai", ollama_host=None):
     else:
         raise ValueError("Provider LLM não suportado.")
 
+
 def enviar_prompt_pergunta(llm_client, prompt, pergunta=None):
     """Envia o prompt ao LLM e retorna a resposta (query DSL)."""
-    return llm_client.invoke(prompt) 
+    return llm_client.invoke(prompt)
