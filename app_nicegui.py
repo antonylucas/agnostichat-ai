@@ -375,9 +375,12 @@ def pagina_principal() -> None:
     def renderizar_landing() -> None:
         """Renderiza a página de landing (não conectado)."""
         with ui.column().classes("w-full items-center justify-center min-h-[70vh] gap-6"):
-            ui.image("assets/logo_agnostic.png").classes("w-24 h-24 opacity-80")
-            ui.html('<div class="landing-titulo">AgnostiChat</div>')
-            ui.html('<div class="landing-subtitulo">Interface conversacional para Elasticsearch com IA</div>')
+            ui.image("assets/logo_agnostichat.png").classes("w-48 opacity-90")
+            ui.html(
+                '<div class="landing-subtitulo" style="margin-top: -8px;">'
+                "Interface conversacional para Elasticsearch com IA"
+                "</div>"
+            )
             with (
                 ui.card()
                 .classes("w-full max-w-md p-6 mt-4")
@@ -462,11 +465,9 @@ def pagina_principal() -> None:
 
     # Conteúdo da sidebar
     with gaveta:
-        # Logo e título
-        with ui.column().classes("items-center mb-6"):
-            ui.image("assets/logo_agnostic.png").classes("w-16 h-16")
-            ui.label("AgnostiChat").classes("text-lg font-bold mt-2").style("color: var(--cor-primaria)")
-            ui.label("powered by AgnosticData").classes("text-xs text-grey-6")
+        # Logo
+        with ui.column().classes("items-center mb-4"):
+            ui.image("assets/logo_agnostichat.png").classes("w-36")
 
         # Configuração Elasticsearch
         with ui.element("div").classes("cartao-config"):
@@ -576,5 +577,5 @@ ui.run(
     port=porta,
     storage_secret="agnostichat-secret-key",
     dark=False,
-    favicon="assets/logo_agnostic.png",
+    favicon="assets/logo_agnostichat.png",
 )
