@@ -2,13 +2,13 @@
 
 ## Project Overview
 
-AgnostiChat is a Streamlit-based conversational interface that lets users query Elasticsearch using natural language. An LLM (OpenAI or Ollama) converts user questions into Elasticsearch DSL queries, executes them, and interprets the results.
+AgnostiChat is a NiceGUI-based conversational interface that lets users query Elasticsearch using natural language. An LLM (OpenAI or Ollama) converts user questions into Elasticsearch DSL queries, executes them, and interprets the results.
 
 ## Architecture
 
 ```
 User question
-  → app.py (Streamlit UI, chat loop, orchestration)
+  → app_nicegui.py (NiceGUI UI, chat loop, orchestration)
     → prompt_builder.py (builds prompt with index mapping + sample docs)
     → llm_utils.py (sends to OpenAI or Ollama via LangChain)
     → LLM returns Elasticsearch DSL JSON
@@ -20,14 +20,13 @@ User question
 
 ## File Structure
 
-- `app.py` — Main Streamlit application (UI, session state, chat loop, orchestration)
+- `app_nicegui.py` — Main NiceGUI application (UI, session state, chat loop, orchestration)
 - `elasticsearch_utils.py` — Elasticsearch client wrapper (connect, list indices, mappings, sample docs, queries)
 - `llm_utils.py` — LLM client factory (OpenAI via langchain-openai, Ollama via langchain-community)
 - `prompt_builder.py` — Prompt engineering (structured prompt with mapping description and sample documents)
 - `query_utils.py` — Query post-processing (auto-appends `.keyword` to text fields in aggregations)
 - `requirements.txt` — Python dependencies
 - `Dockerfile` / `docker-compose.yml` — Container orchestration
-- `.streamlit/config.toml` — Streamlit theme (light, primary color #E60023)
 - `docker-examples/elastic-test/` — Standalone Elasticsearch with sample data generators
 - `docker-examples/ollama/` — Standalone Ollama LLM setup
 
@@ -35,7 +34,7 @@ User question
 
 ```bash
 # Run locally
-streamlit run app.py
+python app_nicegui.py
 
 # Run with Docker
 docker-compose up --build
@@ -74,7 +73,7 @@ mypy .
 ## Dependencies
 
 Managed via `requirements.txt`. Key packages:
-- `streamlit` — UI framework
+- `nicegui` — UI framework (Vue/Quasar under the hood)
 - `elasticsearch==8.12.1` — ES client (pinned)
 - `langchain-openai`, `langchain-community` — LLM integration
 - `python-dotenv` — env file loading
@@ -90,7 +89,7 @@ No test suite exists yet. When adding tests:
 
 ## Docker
 
-- Main app: `docker-compose up` → port 8501
+- Main app: `docker-compose up` → port 8080
 - ES test env: `docker-examples/elastic-test/docker-compose.yml`
 - Ollama: `docker-examples/ollama/docker-compose.yml`
 - Network: `agnostichat-network` (bridge) connects containers

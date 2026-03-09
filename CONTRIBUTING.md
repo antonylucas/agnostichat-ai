@@ -37,7 +37,7 @@
    ```
 5. Test locally:
    ```bash
-   streamlit run app.py
+   python app_nicegui.py
    ```
 6. Commit, push, and open a pull request against `main`
 
