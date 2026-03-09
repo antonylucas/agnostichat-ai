@@ -1,7 +1,8 @@
 streamlit
+nicegui
 elasticsearch==8.12.1
 requests
 python-dotenv
 faker==22.6.0
 langchain-openai
-langchain-community 
+langchain-community

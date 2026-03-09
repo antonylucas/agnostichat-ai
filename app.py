@@ -153,9 +153,7 @@ st.markdown(
 )
 
 # ====== Sidebar com logo e inputs em cards ======
-st.sidebar.image("assets/logo_agnostic.png", use_container_width=True)
-st.sidebar.markdown("<h2 style='color:#E60023; margin-bottom:0;'>AgnostiChat</h2>", unsafe_allow_html=True)
-st.sidebar.markdown("<small>powered by AgnosticData</small>", unsafe_allow_html=True)
+st.sidebar.image("assets/logo_agnostichat.png", use_container_width=True)
 
 # Renderizar cards diretamente na sidebar, sem bloco with
 st.sidebar.markdown("<div class='sidebar-card'>", unsafe_allow_html=True)
