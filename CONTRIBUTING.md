@@ -35,11 +35,15 @@
    ```bash
    mypy .
    ```
-5. Test locally:
+5. Run tests:
    ```bash
-   streamlit run app.py
+   pytest
    ```
-6. Commit, push, and open a pull request against `main`
+6. Test locally:
+   ```bash
+   python -m agnostichat
+   ```
+7. Commit, push, and open a pull request against `main`
 
 ## Code Style
 

@@ -5,7 +5,7 @@ AgnostiChat is a conversational interface that allows users to interact with dat
 ## Tech Stack
 
 - Python
-- Streamlit (Frontend)
+- NiceGUI (Frontend — Vue/Quasar under the hood)
 - Elasticsearch (Data backend)
 - LLM (OpenAI API or local Ollama)
 - LangChain (LLM integration)
@@ -35,7 +35,7 @@ cp .env.example .env  # or create manually
 docker-compose up -d
 
 # 4. Access the application
-# Open http://localhost:8501 in your browser
+# Open http://localhost:8080 in your browser
 ```
 
 ## Running with virtualenv
@@ -52,7 +52,7 @@ pip install -r requirements.txt
 cp .env.example .env  # or create manually
 
 # 4. Run the application
-streamlit run app.py
+python -m agnostichat
 ```
 
 ## Environment Variables
@@ -69,19 +69,21 @@ See `.env.example` for a complete template with descriptions.
 ## How to Use
 
 1. Fill in the credentials in the sidebar (or use .env for auto-fill).
-2. Click "Testar Conexão" (Test Connection).
+2. Click "Conectar" (Connect).
 3. Select an index.
-4. View the mapping and sample documents.
-5. Ask questions in the chat using natural language.
-6. See the generated DSL query and results.
+4. Ask questions in the chat using natural language.
+5. See the generated DSL query and results.
 
 ## Project Structure
 
-- `app.py` — Main application
-- `elasticsearch_utils.py` — Elasticsearch interaction utilities
-- `llm_utils.py` — LLM interaction utilities
-- `prompt_builder.py` — Prompt assembly for the LLM
-- `query_utils.py` — Query adjustment utilities (.keyword field handling)
+```
+agnostichat/                 # Main Python package
+├── config.py                # Centralized configuration
+├── services/                # Business logic (ES, LLM, prompts, queries)
+├── ui/                      # NiceGUI presentation layer
+└── assets/                  # Static files (logo)
+tests/                       # Test suite
+```
 
 ## Sample Data Setup
 
@@ -126,6 +128,9 @@ ruff format .
 
 # Type check
 mypy .
+
+# Run tests
+pytest
 ```
 
 See [CLAUDE.md](CLAUDE.md) for detailed project instructions and coding conventions.

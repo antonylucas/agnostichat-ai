@@ -11,7 +11,6 @@ __pycache__
 .Python
 .env
 .env.example
-.streamlit/
 *.log
 .mypy_cache/
 .ruff_cache/
