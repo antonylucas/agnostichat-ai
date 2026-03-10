@@ -52,7 +52,7 @@ pip install -r requirements.txt
 cp .env.example .env  # or create manually
 
 # 4. Run the application
-python app_nicegui.py
+python -m agnostichat
 ```
 
 ## Environment Variables
@@ -76,11 +76,14 @@ See `.env.example` for a complete template with descriptions.
 
 ## Project Structure
 
-- `app_nicegui.py` — Main application (NiceGUI frontend)
-- `elasticsearch_utils.py` — Elasticsearch interaction utilities
-- `llm_utils.py` — LLM interaction utilities
-- `prompt_builder.py` — Prompt assembly for the LLM
-- `query_utils.py` — Query adjustment utilities (.keyword field handling)
+```
+agnostichat/                 # Main Python package
+├── config.py                # Centralized configuration
+├── services/                # Business logic (ES, LLM, prompts, queries)
+├── ui/                      # NiceGUI presentation layer
+└── assets/                  # Static files (logo)
+tests/                       # Test suite
+```
 
 ## Sample Data Setup
 
@@ -125,6 +128,9 @@ ruff format .
 
 # Type check
 mypy .
+
+# Run tests
+pytest
 ```
 
 See [CLAUDE.md](CLAUDE.md) for detailed project instructions and coding conventions.

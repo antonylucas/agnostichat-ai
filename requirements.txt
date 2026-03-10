@@ -5,3 +5,4 @@ python-dotenv
 faker==22.6.0
 langchain-openai
 langchain-community
+pytest

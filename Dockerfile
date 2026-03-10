@@ -26,4 +26,4 @@ EXPOSE 8080
 ENV PYTHONUNBUFFERED=1
 
 # Command to run the application
-CMD ["python", "app_nicegui.py"]
+CMD ["python", "-m", "agnostichat"]
