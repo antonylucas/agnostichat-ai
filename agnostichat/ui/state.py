@@ -14,6 +14,8 @@ class EstadoApp:
         cfg = config or Configuracao()
         self.es_host: str = cfg.es_host
         self.es_api_key: str = cfg.es_api_key
+        self.es_user: str = cfg.es_user
+        self.es_password: str = cfg.es_password
         self.llm_api_key: str = cfg.llm_api_key
         self.llm_provider: str = cfg.llm_provider
         self.es_client: Any = None
@@ -25,3 +27,4 @@ class EstadoApp:
         self.mapping_indice: str | None = None
         self.mensagens_chat: list[dict] = []
         self.chat_iniciado: bool = False
+        self.llm_validado: bool = False

@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
+from functools import partial
 from pathlib import Path
 
 from nicegui import app, ui
@@ -13,6 +15,7 @@ from agnostichat.services.elasticsearch_utils import (
     conectar_elasticsearch,
     listar_indices,
 )
+from agnostichat.services.llm_utils import validar_llm
 from agnostichat.ui.chat import processar_pergunta
 from agnostichat.ui.components import (
     renderizar_chat,
@@ -21,6 +24,7 @@ from agnostichat.ui.components import (
     renderizar_mensagem,
     renderizar_selecao_indice,
     renderizar_sidebar,
+    renderizar_status,
 )
 from agnostichat.ui.state import EstadoApp
 from agnostichat.ui.styles import CSS_PERSONALIZADO
@@ -53,7 +57,8 @@ def pagina_principal() -> None:
             ui.notify("Informe o host do Elasticsearch", type="warning")
             return
         try:
-            estado.es_client = conectar_elasticsearch(estado.es_host, estado.es_api_key or None)
+            basic_auth = (estado.es_user, estado.es_password) if estado.es_user and estado.es_password else None
+            estado.es_client = conectar_elasticsearch(estado.es_host, estado.es_api_key or None, basic_auth)
             estado.conectado = True
             estado.indices = listar_indices(estado.es_client)
             ui.notify(f"Conectado! {len(estado.indices)} índices encontrados.", type="positive")
@@ -62,6 +67,22 @@ def pagina_principal() -> None:
             estado.conectado = False
             estado.es_client = None
             ui.notify(f"Erro ao conectar: {e}", type="negative")
+
+    async def ao_validar_llm() -> None:
+        """Valida a conexão com o LLM."""
+        if not estado.llm_api_key and estado.llm_provider == "openai":
+            ui.notify("Informe a API Key do LLM", type="warning")
+            return
+        try:
+            await asyncio.get_event_loop().run_in_executor(
+                None, partial(validar_llm, estado.llm_api_key, estado.llm_provider)
+            )
+            estado.llm_validado = True
+            ui.notify("LLM validado com sucesso!", type="positive")
+            atualizar_interface()
+        except Exception as e:
+            estado.llm_validado = False
+            ui.notify(f"Erro ao validar LLM: {e}", type="negative")
 
     def ao_selecionar_indice(valor: str | None) -> None:
         """Carrega mapping e amostras ao selecionar um índice."""
@@ -81,6 +102,9 @@ def pagina_principal() -> None:
 
     async def ao_enviar_mensagem(pergunta: str | None = None) -> None:
         """Processa uma pergunta do usuário."""
+        if not estado.llm_validado:
+            ui.notify("Valide a conexão com o LLM antes de enviar perguntas.", type="warning")
+            return
         texto = pergunta or (refs["entrada_texto"].value if refs["entrada_texto"] else None)
         if not texto or not texto.strip():
             return
@@ -102,7 +126,9 @@ def pagina_principal() -> None:
         await ui.run_javascript("document.querySelector('.area-rolagem')?.scrollTo({top: 999999, behavior: 'smooth'})")
 
         try:
-            conteudo_resposta = processar_pergunta(estado, texto)
+            conteudo_resposta = await asyncio.get_event_loop().run_in_executor(
+                None, partial(processar_pergunta, estado, texto)
+            )
 
             # Remove indicador de carregamento e mostra resposta
             carregando.delete()
@@ -125,7 +151,7 @@ def pagina_principal() -> None:
         await ui.run_javascript("document.querySelector('.area-rolagem')?.scrollTo({top: 999999, behavior: 'smooth'})")
 
     def atualizar_interface() -> None:
-        """Reconstrói a área principal com base no estado atual."""
+        """Reconstrói a área principal, sidebar e header com base no estado atual."""
         refs["container_principal"].clear()
         with refs["container_principal"]:
             if not estado.conectado:
@@ -135,6 +161,14 @@ def pagina_principal() -> None:
             else:
                 renderizar_chat(estado, refs, ao_enviar_mensagem)
 
+        # Atualiza sidebar (mostra seletor de índice após conexão)
+        refs["container_sidebar"].clear()
+        with refs["container_sidebar"]:
+            renderizar_sidebar(estado, ao_conectar, ao_selecionar_indice, ao_validar_llm)
+
+        # Atualiza indicador de status no header
+        renderizar_status(refs["container_status"], estado)
+
     # ====== Layout principal ======
 
     ui.add_css(CSS_PERSONALIZADO)
@@ -143,11 +177,13 @@ def pagina_principal() -> None:
     gaveta = ui.left_drawer(value=True, bordered=True).classes("p-4")
 
     # Cabeçalho
-    renderizar_header(estado, gaveta)
+    refs["container_status"] = renderizar_header(estado, gaveta)
 
-    # Conteúdo da sidebar
+    # Conteúdo da sidebar (dentro de um container para permitir atualização)
     with gaveta:
-        renderizar_sidebar(estado, ao_conectar, ao_selecionar_indice)
+        refs["container_sidebar"] = ui.column().classes("w-full")
+        with refs["container_sidebar"]:
+            renderizar_sidebar(estado, ao_conectar, ao_selecionar_indice, ao_validar_llm)
 
     # Área de conteúdo principal
     with ui.column().classes("w-full h-full"):
