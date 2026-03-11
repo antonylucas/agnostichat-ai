@@ -114,7 +114,9 @@ def renderizar_chat(
             ).props("round flat color=primary").style("color: var(--cor-primaria)")
 
 
-def renderizar_sidebar(estado: EstadoApp, ao_conectar: Callable, ao_selecionar_indice: Callable) -> None:
+def renderizar_sidebar(
+    estado: EstadoApp, ao_conectar: Callable, ao_selecionar_indice: Callable, ao_validar_llm: Callable | None = None
+) -> None:
     """Renderiza o conteúdo da sidebar."""
     # Logo
     with ui.column().classes("items-center mb-4"):
@@ -128,6 +130,20 @@ def renderizar_sidebar(estado: EstadoApp, ao_conectar: Callable, ao_selecionar_i
             value=estado.es_host,
             placeholder="http://localhost:9200",
             on_change=lambda e: setattr(estado, "es_host", e.value),
+        ).props("outlined dense").classes("w-full mb-2")
+        ui.input(
+            "Usuário",
+            value=estado.es_user,
+            placeholder="Opcional",
+            on_change=lambda e: setattr(estado, "es_user", e.value),
+        ).props("outlined dense").classes("w-full mb-2")
+        ui.input(
+            "Senha",
+            value=estado.es_password,
+            placeholder="Opcional",
+            password=True,
+            password_toggle_button=True,
+            on_change=lambda e: setattr(estado, "es_password", e.value),
         ).props("outlined dense").classes("w-full mb-2")
         ui.input(
             "API Key",
@@ -154,7 +170,14 @@ def renderizar_sidebar(estado: EstadoApp, ao_conectar: Callable, ao_selecionar_i
             password=True,
             password_toggle_button=True,
             on_change=lambda e: setattr(estado, "llm_api_key", e.value),
-        ).props("outlined dense").classes("w-full")
+        ).props("outlined dense").classes("w-full mb-3")
+        if ao_validar_llm:
+            if estado.llm_validado:
+                ui.button("LLM Validado", on_click=ao_validar_llm).classes("w-full botao-conectar").props(
+                    "no-caps color=positive"
+                )
+            else:
+                ui.button("Validar LLM", on_click=ao_validar_llm).classes("w-full botao-conectar").props("no-caps")
 
     # Seleção de índice (aparece apenas quando conectado)
     if estado.conectado and estado.indices:
@@ -167,12 +190,10 @@ def renderizar_sidebar(estado: EstadoApp, ao_conectar: Callable, ao_selecionar_i
             ).props("outlined dense").classes("w-full")
 
 
-def renderizar_header(estado: EstadoApp, gaveta: Any) -> None:
-    """Renderiza o cabeçalho da aplicação."""
-    with ui.header().classes("items-center px-4 py-2 shadow-none"):
-        ui.button(icon="menu", on_click=lambda: gaveta.toggle()).props("flat round color=grey-8")
-        ui.label("AgnostiChat").classes("text-lg font-bold ml-2").style("color: var(--cor-texto)")
-        ui.space()
+def renderizar_status(container: Any, estado: EstadoApp) -> None:
+    """Atualiza o indicador de status de conexão no header."""
+    container.clear()
+    with container:
         if estado.conectado:
             with ui.row().classes("items-center gap-1"):
                 ui.html('<span class="indicador-status status-conectado"></span>')
@@ -181,3 +202,14 @@ def renderizar_header(estado: EstadoApp, gaveta: Any) -> None:
             with ui.row().classes("items-center gap-1"):
                 ui.html('<span class="indicador-status status-desconectado"></span>')
                 ui.label("Desconectado").classes("text-xs text-grey-6")
+
+
+def renderizar_header(estado: EstadoApp, gaveta: Any) -> Any:
+    """Renderiza o cabeçalho da aplicação. Retorna o container de status."""
+    with ui.header().classes("items-center px-4 py-2 shadow-none"):
+        ui.button(icon="menu", on_click=lambda: gaveta.toggle()).props("flat round color=grey-8")
+        ui.label("AgnostiChat").classes("text-lg font-bold ml-2").style("color: var(--cor-texto)")
+        ui.space()
+        container_status = ui.row()
+        renderizar_status(container_status, estado)
+    return container_status

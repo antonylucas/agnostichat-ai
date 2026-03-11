@@ -17,6 +17,16 @@ def conectar_llm(api_key, provider="openai", ollama_host=None):
         raise ValueError("Provider LLM não suportado.")
 
 
+def validar_llm(api_key: str, provider: str = "openai") -> bool:
+    """Valida a conexão com o LLM enviando um prompt simples de teste."""
+    client = conectar_llm(api_key, provider)
+    resposta = client.invoke("Responda apenas: OK")
+    conteudo = resposta.content if hasattr(resposta, "content") else str(resposta)
+    if not conteudo or not conteudo.strip():
+        raise ConnectionError("LLM retornou resposta vazia.")
+    return True
+
+
 def enviar_prompt_pergunta(llm_client, prompt, pergunta=None):
     """Envia o prompt ao LLM e retorna a resposta (query DSL)."""
     return llm_client.invoke(prompt)

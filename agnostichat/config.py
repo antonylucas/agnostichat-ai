@@ -16,6 +16,8 @@ class Configuracao:
 
     es_host: str = field(default_factory=lambda: os.getenv("ES_HOST", ""))
     es_api_key: str = field(default_factory=lambda: os.getenv("ES_API_KEY", ""))
+    es_user: str = field(default_factory=lambda: os.getenv("ES_USER", ""))
+    es_password: str = field(default_factory=lambda: os.getenv("ES_PASSWORD", ""))
     llm_api_key: str = field(default_factory=lambda: os.getenv("LLM_API_KEY", ""))
     llm_provider: str = field(default_factory=lambda: os.getenv("LLM_PROVIDER", "openai"))
     porta: int = field(default_factory=lambda: int(os.getenv("PORT", "8080")))
